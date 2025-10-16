@@ -17,6 +17,9 @@ public class Article {
         this.discount = discount;
     }
 
+    public Article() {
+    }
+
     // Getters y Setters
     public String getName() {
         return name;

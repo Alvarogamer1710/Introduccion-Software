@@ -16,6 +16,9 @@ public class Order {
         this.articles = articles;
     }
 
+    public Order() {
+    }
+
     // Getters y Setters
     public String getOrderId() {
         return orderId;
