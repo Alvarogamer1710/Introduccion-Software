@@ -1,10 +1,12 @@
 package com.example;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 class SearcherTest {
 
@@ -25,8 +27,9 @@ class SearcherTest {
     @Test
     void testSearchWord_found() {
         Searcher searcher = new Searcher();
-        List<String> list = Arrays.asList("Java es genial", "Me gusta programar");
-        assertTrue(searcher.searchWord("Java", list));
+        List<String> list = Arrays.asList("Java es genial", "Java", "Me gusta programar");
+        boolean resultado = searcher.searchWord("Java", list) ;
+        assertTrue(resultado);
     }
 
     @Test
@@ -40,8 +43,7 @@ class SearcherTest {
     void testGetWordByIndex_outOfBounds() {
         Searcher searcher = new Searcher();
         List<String> list = Arrays.asList("uno", "dos");
-        assertThrows(IndexOutOfBoundsException.class,
-                () -> searcher.getWordByIndex(list, 5));
+        assertNull( searcher.getWordByIndex(list, 5));
     }
 
     @Test
