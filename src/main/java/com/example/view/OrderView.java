@@ -1,9 +1,16 @@
 package com.example.view;
 
-import javax.swing.*;
-import com.example.Order;
-import java.awt.*;
+import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import com.example.Order;
 
 public class OrderView extends JFrame {
 
@@ -45,8 +52,21 @@ public class OrderView extends JFrame {
 
     // Muestra los detalles del pedido encontrado
     public void displayOrder(Order order) {
-        resultArea.setText(order.toString());
-    }
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("Order ID: ").append(order.getOrderId()).append("\n\n");
+
+    sb.append("Articles:\n");
+    order.getArticles().forEach(a -> {
+        sb.append("- Name: ").append(a.getName()).append("\n")
+          .append("  Quantity: ").append(a.getQuantity()).append("\n")
+          .append("  Unit Price: ").append(a.getPrice()).append("\n")
+          .append("  Discount: ").append(a.getDiscount()).append("%\n\n");
+    });
+
+    resultArea.setText(sb.toString());
+}
+
 
     // Muestra un mensaje (por ejemplo: "Order not found.")
     public void displayMessage(String message) {
