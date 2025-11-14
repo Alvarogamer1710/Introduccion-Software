@@ -1,0 +1,99 @@
+@startuml secuencia
+title Diagrama de Secuencia - Visualización de un Pedido
+
+actor Usuario
+participant OrderView
+participant OrderController
+participant Searcher
+participant Order
+participant Article
+participant Calculator
+
+Usuario -> OrderView: Ingresa ID y hace clic en Search
+activate OrderView
+
+OrderView -> OrderController: searchOrder()
+activate OrderController
+
+OrderController -> Searcher: Busca pedido por ID
+activate Searcher
+
+Searcher --> OrderController: Order encontrado
+deactivate Searcher
+
+alt Pedido Encontrado
+    OrderController -> Order: getArticles()
+    activate Order
+    
+    Order --> OrderController: Lista de artículos
+    deactivate Order
+    
+    OrderController -> Order: getGrossTotal()
+    activate Order
+    
+    Order -> Article: getGrossAmount()
+    activate Article
+    
+    Article -> Calculator: multiply(quantity, price)
+    activate Calculator
+    
+    Calculator --> Article: Total bruto
+    deactivate Calculator
+    
+    Article --> Order: Monto bruto del artículo
+    deactivate Article
+    
+    Order -> Calculator: calculateTotal(amounts)
+    activate Calculator
+    
+    Calculator --> Order: Total bruto del pedido
+    deactivate Calculator
+    
+    Order --> OrderController: Gross Total
+    deactivate Order
+    
+    OrderController -> Order: getDiscountedTotal()
+    activate Order
+    
+    Order -> Article: getDiscountedAmount()
+    activate Article
+    
+    Article -> Calculator: discount(amount, percent)
+    activate Calculator
+    
+    Calculator --> Article: Monto con descuento
+    deactivate Calculator
+    
+    Article --> Order: Monto con descuento del artículo
+    deactivate Article
+    
+    Order -> Calculator: calculateTotal(amounts)
+    activate Calculator
+    
+    Calculator --> Order: Total con descuento del pedido
+    deactivate Calculator
+    
+    Order --> OrderController: Discounted Total
+    deactivate Order
+    
+    OrderController -> OrderView: displayOrder(order)
+    activate OrderView
+    
+    OrderView -> OrderView: Formatea y muestra los datos
+    
+    OrderView --> Usuario: Muestra detalles del pedido\n(ID, artículos, totales)
+    deactivate OrderView
+    
+else Pedido No Encontrado
+    OrderController -> OrderView: displayMessage("Order not found.")
+    activate OrderView
+    
+    OrderView --> Usuario: Muestra mensaje de error
+    deactivate OrderView
+    
+end
+
+deactivate OrderController
+deactivate OrderView
+
+@enduml

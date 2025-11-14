@@ -1,0 +1,49 @@
+@startuml casosDeUso
+title Diagrama de Casos de Uso - Aplicación de Gestión de Pedidos
+
+left to right direction
+
+actor Usuario as user
+actor Sistema as sys
+
+rectangle "Sistema de Gestión de Pedidos" {
+    usecase "Cargar Pedidos" as LoadOrders
+    usecase "Buscar Pedido por ID" as SearchOrder
+    usecase "Mostrar Detalles del Pedido" as DisplayOrder
+    usecase "Mostrar Mensaje de Error" as ShowError
+    usecase "Calcular Total de Pedido" as CalculateTotal
+    usecase "Aplicar Descuento" as ApplyDiscount
+    usecase "Buscar Artículos por Palabra Clave" as SearchArticles
+}
+
+user --> SearchOrder : Ingresa ID
+user --> DisplayOrder : Solicita ver detalles
+user --> ShowError : Recibe error
+
+LoadOrders --> sys : Inicia la aplicación
+SearchOrder --> CalculateTotal : Calcula total
+SearchOrder --> ApplyDiscount : Aplica descuentos
+SearchOrder --> SearchArticles : Busca artículos
+DisplayOrder --> CalculateTotal : Muestra detalles con cálculos
+
+note right of LoadOrders
+  Carga los datos de
+  pedidos desde orders.json
+end note
+
+note right of SearchOrder
+  Búsqueda de pedidos
+  por ID en la base de datos
+end note
+
+note right of CalculateTotal
+  Suma los precios de
+  artículos en el pedido
+end note
+
+note right of ApplyDiscount
+  Calcula el descuento
+  aplicado a artículos
+end note
+
+@enduml
