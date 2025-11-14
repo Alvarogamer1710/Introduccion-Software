@@ -3,11 +3,11 @@ package com.example.controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.example.Order;
-import com.example.Searcher;
 import com.example.view.OrderView;
 
 public class OrderController {
@@ -16,13 +16,11 @@ public class OrderController {
     // Atributos
     private OrderView view;
     private List<Order> orders;
-    private Searcher searcher;
 
     public OrderController(OrderView view, List<Order> orders) {
         // Inicializar atributos
         this.view = view;
         this.orders = orders;
-        this.searcher = new Searcher();
 
         // Añadir listener al botón de búsqueda
         this.view.addSearchListener(new ActionListener() {
