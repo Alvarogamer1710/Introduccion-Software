@@ -3,12 +3,15 @@ package com.example;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.service.ExchangeRateService;
+
 public class Order {
     // Atributos
     private String orderId;
     private List<Article> articles;
 
     private Calculator calculator = new Calculator();
+    private ExchangeRateService exchangeRateService = new ExchangeRateService();
 
     // Constructor
     public Order(String orderId, List<Article> articles) {
@@ -50,6 +53,29 @@ public class Order {
         );
     }
 
+    // Métodos para conversión de moneda
+    
+    /**
+     * Obtiene el total bruto en USD.
+     */
+    public double getGrossTotalUSD() {
+        return exchangeRateService.convertEURtoUSD(getGrossTotal());
+    }
+
+    /**
+     * Obtiene el total con descuentos en USD.
+     */
+    public double getDiscountedTotalUSD() {
+        return exchangeRateService.convertEURtoUSD(getDiscountedTotal());
+    }
+
+    /**
+     * Obtiene el tipo de cambio actual EUR/USD.
+     */
+    public double getExchangeRate() {
+        return exchangeRateService.getExchangeRate();
+    }
+
     @Override
     public String toString() {
         return "Order{" +
@@ -58,5 +84,6 @@ public class Order {
                 ", grossTotal=" + getGrossTotal() +
                 ", discountedTotal=" + getDiscountedTotal() +
                 '}';
+
     }
 }

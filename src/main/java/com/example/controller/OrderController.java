@@ -47,7 +47,14 @@ public class OrderController {
         // Mostrar resultado
         if (found != null) {
             log.info("Pedido encontrado: {}", found);
-            view.displayOrder(found);
+            try {
+                // Intentar obtener el tipo de cambio (se hace en displayOrder)
+                view.displayOrder(found);
+            } catch (Exception e) {
+                log.warn("Error al mostrar el pedido, pero continuamos mostrando información básica", e);
+                view.displayMessage("Se encontró el pedido pero hubo un error al obtener el tipo de cambio.\n"
+                        + "Mostrando información con tipo de cambio por defecto.\n\n" + found);
+            }
         } else {
             log.warn("Pedido no encontrado con ID: {}", id);
             view.displayMessage("Order not found.");

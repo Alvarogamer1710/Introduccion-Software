@@ -11,6 +11,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import com.example.Order;
+import com.example.Article;
 
 public class OrderView extends JFrame {
 
@@ -52,20 +53,47 @@ public class OrderView extends JFrame {
 
     // Muestra los detalles del pedido encontrado
     public void displayOrder(Order order) {
-    StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
-    sb.append("Order ID: ").append(order.getOrderId()).append("\n\n");
+        // Encabezado
+        sb.append("═══════════════════════════════════════════\n");
+        sb.append(String.format("       DETALLES DEL PEDIDO: %s\n", order.getOrderId()));
+        sb.append("═══════════════════════════════════════════\n\n");
 
-    sb.append("Articles:\n");
-    order.getArticles().forEach(a -> {
-        sb.append("- Name: ").append(a.getName()).append("\n")
-          .append("  Quantity: ").append(a.getQuantity()).append("\n")
-          .append("  Unit Price: ").append(a.getPrice()).append("\n")
-          .append("  Discount: ").append(a.getDiscount()).append("%\n\n");
-    });
+        // Tipo de cambio
+        double exchangeRate = order.getExchangeRate();
+        sb.append(String.format("Tipo de cambio EUR/USD: 1 EUR = %.4f USD\n\n", exchangeRate));
 
-    resultArea.setText(sb.toString());
-}
+        // Encabezado de artículos
+        sb.append("ARTÍCULOS:\n");
+        sb.append("───────────────────────────────────────────\n");
+
+        // Detalles de cada artículo
+        for (Article article : order.getArticles()) {
+            sb.append(String.format("• %s\n", article.getName()));
+            sb.append(String.format("  Cantidad: %d | Precio unitario: €%.2f\n",
+                    article.getQuantity(), article.getPrice()));
+            sb.append(String.format("  Descuento: %.2f%%\n", article.getDiscount()));
+            sb.append(String.format("  Total bruto: €%.2f | $%.2f\n",
+                    article.getGrossAmount(),
+                    exchangeRate * article.getGrossAmount()));
+            sb.append(String.format("  Total con descuento: €%.2f | $%.2f\n\n",
+                    article.getDiscountedAmount(),
+                    exchangeRate * article.getDiscountedAmount()));
+        }
+
+        // Totales
+        sb.append("═══════════════════════════════════════════\n");
+        sb.append(String.format("TOTAL BRUTO:       €%.2f | $%.2f\n",
+                order.getGrossTotal(),
+                order.getGrossTotalUSD()));
+        sb.append(String.format("TOTAL CON DESCTO:  €%.2f | $%.2f\n",
+                order.getDiscountedTotal(),
+                order.getDiscountedTotalUSD()));
+        sb.append("═══════════════════════════════════════════\n");
+
+        resultArea.setText(sb.toString());
+    }
 
 
     // Muestra un mensaje (por ejemplo: "Order not found.")
