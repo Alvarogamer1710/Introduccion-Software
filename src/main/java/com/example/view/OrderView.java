@@ -1,58 +1,183 @@
 package com.example.view;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import com.example.Order;
 import com.example.Article;
+import com.example.Order;
 
 public class OrderView extends JFrame {
 
+    // Componentes para búsqueda
     private JTextField searchField = new JTextField(10);
     private JButton searchButton = new JButton("Search");
+
+    // Componentes para lista de IDs
+    private JTextArea orderListArea = new JTextArea(10, 40);
+
+    // Componentes para resultado de búsqueda
     private JTextArea resultArea = new JTextArea(10, 40);
+
+    // Botones de acciones
+    private JButton deleteButton = new JButton("Delete Order");
+    private JButton editButton = new JButton("Edit Order");
+    private JButton createButton = new JButton("Create New Order");
+    private JButton backButton = new JButton("Back to List");
+
+    // Panel para mostrar componentes dinámicamente
+    private JPanel mainPanel;
+
+    // Estado actual
+    private String currentOrderId = null;
 
     public OrderView() {
         setTitle("Order Management");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new FlowLayout());
+        setSize(600, 700);
+        setLocationRelativeTo(null);
 
-        // Añadir componentes
-        add(new JLabel("Order ID:"));
-        add(searchField);
-        add(searchButton);
-        add(new JScrollPane(resultArea));
+        mainPanel = new JPanel(new BorderLayout());
+        setContentPane(mainPanel);
 
-        resultArea.setEditable(false); // no permitir escribir en el área de resultados
+        // Crear panel superior para búsqueda y creación
+        JPanel topPanel = new JPanel(new FlowLayout());
+        topPanel.add(new JLabel("Order ID:"));
+        topPanel.add(searchField);
+        topPanel.add(searchButton);
+        topPanel.add(createButton);
 
-        pack();
+        // Crear panel para lista de IDs
+        orderListArea.setEditable(false);
+        JPanel listPanel = new JPanel(new BorderLayout());
+        listPanel.add(new JLabel("Available Orders:"), BorderLayout.NORTH);
+        listPanel.add(new JScrollPane(orderListArea), BorderLayout.CENTER);
+
+        // Crear panel para resultado de búsqueda
+        resultArea.setEditable(false);
+        JPanel resultPanel = new JPanel(new BorderLayout());
+        resultPanel.add(new JScrollPane(resultArea), BorderLayout.CENTER);
+
+        // Crear panel para botones de acciones
+        JPanel actionPanel = new JPanel(new FlowLayout());
+        actionPanel.add(deleteButton);
+        actionPanel.add(editButton);
+        actionPanel.add(backButton);
+        resultPanel.add(actionPanel, BorderLayout.SOUTH);
+
+        // Agregar componentes al panel principal
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(listPanel, BorderLayout.CENTER);
+        mainPanel.add(resultPanel, BorderLayout.SOUTH);
+
+        // Inicialmente mostrar solo la lista y ocultar panel de resultado
+        resultPanel.setVisible(false);
+        backButton.setVisible(false);
+        deleteButton.setVisible(false);
+        editButton.setVisible(false);
+
         setVisible(true);
     }
 
-    // Devuelve el texto introducido por el usuario
+    // ========== MÉTODOS PARA BÚSQUEDA ==========
+
     public String getSearchId() {
         return searchField.getText();
     }
 
-    // Devuelve el botón de búsqueda (por si el controlador lo necesita)
     public JButton getSearchButton() {
         return searchButton;
     }
 
-    // Permite al controlador registrar un listener en el botón
     public void addSearchListener(ActionListener listener) {
         searchButton.addActionListener(listener);
     }
 
-    // Muestra los detalles del pedido encontrado
+    // ========== MÉTODOS PARA CREACIÓN ==========
+
+    public JButton getCreateButton() {
+        return createButton;
+    }
+
+    public void addCreateListener(ActionListener listener) {
+        createButton.addActionListener(listener);
+    }
+
+    // ========== MÉTODOS PARA ELIMINACIÓN ==========
+
+    public JButton getDeleteButton() {
+        return deleteButton;
+    }
+
+    public void addDeleteListener(ActionListener listener) {
+        deleteButton.addActionListener(listener);
+    }
+
+    public String getCurrentOrderId() {
+        return currentOrderId;
+    }
+
+    // ========== MÉTODOS PARA EDICIÓN ==========
+
+    public JButton getEditButton() {
+        return editButton;
+    }
+
+    public void addEditListener(ActionListener listener) {
+        editButton.addActionListener(listener);
+    }
+
+    // ========== MÉTODOS PARA NAVEGACIÓN ==========
+
+    public JButton getBackButton() {
+        return backButton;
+    }
+
+    public void addBackListener(ActionListener listener) {
+        backButton.addActionListener(listener);
+    }
+
+    // ========== MÉTODOS PARA MOSTRAR DATOS ==========
+
+    /**
+     * Muestra la lista de IDs de pedidos disponibles
+     */
+    public void displayOrderList(List<Order> orders) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("═══════════════════════════════════════════\n");
+        sb.append("         LISTA DE PEDIDOS DISPONIBLES\n");
+        sb.append("═══════════════════════════════════════════\n\n");
+
+        if (orders.isEmpty()) {
+            sb.append("No hay pedidos disponibles.\n");
+        } else {
+            for (Order order : orders) {
+                sb.append(String.format("• Order ID: %s\n", order.getOrderId()));
+            }
+        }
+
+        sb.append("\n═══════════════════════════════════════════\n");
+        sb.append("(Introduce el ID en el campo de búsqueda)\n");
+
+        orderListArea.setText(sb.toString());
+        clearSearchField();
+    }
+
+    /**
+     * Muestra los detalles de un pedido encontrado
+     */
     public void displayOrder(Order order) {
+        this.currentOrderId = order.getOrderId();
+
         StringBuilder sb = new StringBuilder();
 
         // Encabezado
@@ -93,11 +218,74 @@ public class OrderView extends JFrame {
         sb.append("═══════════════════════════════════════════\n");
 
         resultArea.setText(sb.toString());
+        showDetailView();
     }
 
-
-    // Muestra un mensaje (por ejemplo: "Order not found.")
+    /**
+     * Muestra un mensaje genérico
+     */
     public void displayMessage(String message) {
         resultArea.setText(message);
+        showDetailView();
+    }
+
+    /**
+     * Cambia la vista para mostrar detalles del pedido
+     */
+    private void showDetailView() {
+        JPanel centerPanel = (JPanel) mainPanel.getComponent(1);
+        JPanel southPanel = (JPanel) mainPanel.getComponent(2);
+
+        centerPanel.setVisible(false);
+        southPanel.setVisible(true);
+        backButton.setVisible(true);
+        deleteButton.setVisible(true);
+        editButton.setVisible(true);
+
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
+    /**
+     * Cambia la vista para mostrar la lista de pedidos
+     */
+    public void showListView() {
+        JPanel centerPanel = (JPanel) mainPanel.getComponent(1);
+        JPanel southPanel = (JPanel) mainPanel.getComponent(2);
+
+        centerPanel.setVisible(true);
+        southPanel.setVisible(false);
+        backButton.setVisible(false);
+        deleteButton.setVisible(false);
+        editButton.setVisible(false);
+
+        this.currentOrderId = null;
+        clearSearchField();
+
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
+    /**
+     * Limpia el campo de búsqueda
+     */
+    public void clearSearchField() {
+        searchField.setText("");
+    }
+
+    /**
+     * Muestra un diálogo simple con mensaje
+     */
+    public void showAlert(String title, String message) {
+        javax.swing.JOptionPane.showMessageDialog(this, message, title,
+                javax.swing.JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /**
+     * Muestra un diálogo de error
+     */
+    public void showError(String title, String message) {
+        javax.swing.JOptionPane.showMessageDialog(this, message, title,
+                javax.swing.JOptionPane.ERROR_MESSAGE);
     }
 }

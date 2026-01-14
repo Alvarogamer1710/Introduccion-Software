@@ -8,42 +8,66 @@ actor Sistema as sys
 
 rectangle "Sistema de Gestión de Pedidos" {
     usecase "Cargar Pedidos" as LoadOrders
+    usecase "Mostrar Lista de IDs de Pedidos" as ShowOrderList
     usecase "Buscar Pedido por ID" as SearchOrder
     usecase "Mostrar Detalles del Pedido" as DisplayOrder
+    usecase "Crear Nuevo Pedido" as CreateOrder
+    usecase "Eliminar Pedido" as DeleteOrder
+    usecase "Editar Cantidad y Descuento" as EditOrder
     usecase "Mostrar Mensaje de Error" as ShowError
     usecase "Calcular Total de Pedido" as CalculateTotal
     usecase "Aplicar Descuento" as ApplyDiscount
-    usecase "Buscar Artículos por Palabra Clave" as SearchArticles
+    usecase "Guardar Pedidos en JSON" as SaveToJSON
 }
 
+user --> ShowOrderList : Ver lista inicial
 user --> SearchOrder : Ingresa ID
+user --> CreateOrder : Crea nuevo pedido
+user --> DeleteOrder : Elimina un pedido
+user --> EditOrder : Edita cantidad/descuento
 user --> DisplayOrder : Solicita ver detalles
 user --> ShowError : Recibe error
 
 LoadOrders --> sys : Inicia la aplicación
-SearchOrder --> CalculateTotal : Calcula total
-SearchOrder --> ApplyDiscount : Aplica descuentos
-SearchOrder --> SearchArticles : Busca artículos
+LoadOrders --> ShowOrderList : Carga datos
+ShowOrderList --> DisplayOrder : Selecciona pedido
+SearchOrder --> DisplayOrder : Encuentra pedido
+SearchOrder --> ShowError : No encuentra pedido
 DisplayOrder --> CalculateTotal : Muestra detalles con cálculos
+CreateOrder --> SaveToJSON : Guarda nuevo pedido
+DeleteOrder --> SaveToJSON : Actualiza lista
+EditOrder --> SaveToJSON : Guarda cambios
+CalculateTotal --> ApplyDiscount : Aplica descuentos
+SaveToJSON --> sys : Persiste datos
 
 note right of LoadOrders
   Carga los datos de
   pedidos desde orders.json
 end note
 
-note right of SearchOrder
-  Búsqueda de pedidos
-  por ID en la base de datos
+note right of ShowOrderList
+  Muestra lista de IDs
+  de pedidos disponibles
 end note
 
-note right of CalculateTotal
-  Suma los precios de
-  artículos en el pedido
+note right of CreateOrder
+  Permite crear nuevos pedidos
+  con artículos personalizados
 end note
 
-note right of ApplyDiscount
-  Calcula el descuento
-  aplicado a artículos
+note right of DeleteOrder
+  Elimina pedidos y
+  actualiza el archivo JSON
+end note
+
+note right of EditOrder
+  Permite editar solo la
+  cantidad y descuento de artículos
+end note
+
+note right of SaveToJSON
+  Guarda cambios en el
+  archivo orders.json
 end note
 
 @enduml
